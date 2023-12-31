@@ -2,6 +2,10 @@ package com.example.crm04.Controller;
 
 import com.example.crm04.Entity.UserEntity;
 import com.example.crm04.Repository.UserRepository;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -28,13 +32,46 @@ public class LoginController {
     private UserRepository userRepository;
 
     @GetMapping("")
-    public String login(){
-        List<UserEntity> list = userRepository.findByEmailAndPassword("nguyenvana@gmail.com","123456");
-        for(UserEntity item: list){
-            System.out.println("Kiem tra " + item.getEmail());
+    public String login(HttpServletRequest request,Model model){
+//        List<UserEntity> list = userRepository.findByEmailAndPassword("nguyenvana@gmail.com","123456");
+//        for(UserEntity item: list){
+//            System.out.println("Kiem tra " + item.getEmail());
+//        }
+        String email = "";
+        String password = "";
+        Cookie[] cookies = request.getCookies();
+        if(cookies != null) {
+            for (Cookie cookie : cookies) {
+                if (cookie.getName().equals("email")) {
+                    System.out.println("Kiem tra: " + cookie.getValue());
+                    email = cookie.getValue();
+                }
+
+                if (cookie.getName().equals("password")) {
+                    System.out.println("Kiem tra: " + cookie.getValue());
+                    password = cookie.getValue();
+
+                }
+            }
+
+
+            model.addAttribute("password", password);
+            model.addAttribute("email", email);
         }
-        return"login";
+        return "login";
     }
+
+//        @GetMapping("")
+//        public String check(@RequestParam("email") String email,
+//                            @RequestParam("password") String password){
+//
+//            List<UserEntity> list = userRepository.findByEmailAndPassword(email, password);
+//            System.out.println("Username: " + email);
+//            System.out.println("Password: " + password);
+//
+//
+//            return "redirect:/login";
+//        }
 
     /**
      * Hoàn thiện chức năng login
@@ -47,13 +84,32 @@ public class LoginController {
 
     //model: cho phép trả giá trị từ java sang file view.
     @PostMapping("/dashboard")
-    public String checklogin(Model model, @RequestParam("email") String email, @RequestParam("password") String password) {
+    public String checklogin(Model model, @RequestParam("email") String email,
+                             @RequestParam("password") String password,
+                             @RequestParam(required = false) String remember,
+                             HttpServletResponse response, HttpSession httpSession) {
+
         boolean flag = false;
         List<UserEntity> list = userRepository.findByEmailAndPassword(email, password);
         System.out.println("Username: " + email);
         System.out.println("Password: " + password);
         if (list.size() > 0) {
+            System.out.println("ddang nhap thanh cong");
             flag = true;
+            System.out.println("Kiem tra: " + remember);
+            try {
+                if(remember.equalsIgnoreCase("on")){
+                    Cookie emailcookie = new Cookie("email", email);
+                    Cookie passwordcookie = new Cookie("password", password);
+                    response.addCookie(emailcookie);
+                    response.addCookie(passwordcookie);
+                }
+            } catch (Exception e ) {
+                return "index";
+            }
+
+            httpSession.setAttribute("email",email);
+            httpSession.setMaxInactiveInterval(8*60*60);
         }
         else {
             flag = false;
@@ -63,5 +119,9 @@ public class LoginController {
         return "index";
     }
 
+    /**
+     * Khi  đăng nhập thành công thì lưu email và mật khẩu vào cookie
+     * Khi người dùng  vô lại link / login thì sẽ điền sẵn tên đăng nhập và mật khẩu
+     */
 
 }

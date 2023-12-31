@@ -32,7 +32,7 @@ public class RoleController {
      * -Thêm mới : khóa chính của class entity truyền vào hàm save() không có giá trị
      * -Cập nhật : khóa chính của class entity truyền vào hàm save() có giá trị
      */
-    @GetMapping("/add")
+    @GetMapping("")
     public String add(){
 //        RolesEntity rolesEntity = new RolesEntity();
 //        //rolesEntity.setId(4) *cập nhật
@@ -43,16 +43,22 @@ public class RoleController {
     }
     @PostMapping("/add")
     public String processAdd(@RequestParam String roleName, @RequestParam String desc, Model model){
+        boolean flag = false;
         RolesEntity rolesEntity = new RolesEntity();
-        rolesEntity.setName(roleName);
-        rolesEntity.setDescription(desc);
-
-        try {
+        if(!roleName.isEmpty()) {
+            flag = true;
+            rolesEntity.setName(roleName);
+            rolesEntity.setDescription(desc);
             roleRepository.save(rolesEntity);
-        }catch (Exception e){
-            //Code bên trong catch chi được chạy khi các đoạn code trong try bị lỗi liên quan đến run time Error
-            System.out.println("Lỗi thêm dữ liệu:" + e.getMessage());
         }
+
+        model.addAttribute("flag", flag);
+//        try {
+//
+//        }catch (Exception e){
+//            //Code bên trong catch chi được chạy khi các đoạn code trong try bị lỗi liên quan đến run time Error
+//            System.out.println("Lỗi thêm dữ liệu:" + e.getMessage());
+//        }
 
         /**
          * chỉnh link /role thành /role/add: fix lỗi liên quan đến css và js bên file HTML
