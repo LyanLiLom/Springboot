@@ -2,13 +2,13 @@ package com.example.crm04.Controller;
 
 import com.example.crm04.Entity.RolesEntity;
 import com.example.crm04.Repository.RoleRepository;
+import com.example.crm04.service.RoleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @Controller
 @RequestMapping("/role")
@@ -27,6 +27,9 @@ public class RoleController {
     @Autowired
     private RoleRepository roleRepository;
 
+    @Autowired
+    private RoleService roleService;
+
     /**
      *save() save có 2 chức năng vừa là thêm dữ liệu vừa là cập nhật dữ liệu
      * -Thêm mới : khóa chính của class entity truyền vào hàm save() không có giá trị
@@ -43,14 +46,7 @@ public class RoleController {
     }
     @PostMapping("/add")
     public String processAdd(@RequestParam String roleName, @RequestParam String desc, Model model){
-        boolean flag = false;
-        RolesEntity rolesEntity = new RolesEntity();
-        if(!roleName.isEmpty()) {
-            flag = true;
-            rolesEntity.setName(roleName);
-            rolesEntity.setDescription(desc);
-            roleRepository.save(rolesEntity);
-        }
+        boolean flag = roleService.insertRole(roleName,desc);
 
         model.addAttribute("flag", flag);
 //        try {
@@ -66,5 +62,18 @@ public class RoleController {
          */
 
         return "role-add.html";
+    }
+
+    @GetMapping("/table")
+    public String table(Model model){
+        List<RolesEntity> rolesEntities = roleService.getAllRole();
+        model.addAttribute("roles",rolesEntities);
+        System.out.println("Kiểm tra roletable");
+        return "role-table.html";
+    }
+    @GetMapping("/delete/{id}")
+    public String deleterole(@PathVariable Integer id){
+        roleRepository.deleteById(id);
+        return "redirect:/role/table";
     }
 }

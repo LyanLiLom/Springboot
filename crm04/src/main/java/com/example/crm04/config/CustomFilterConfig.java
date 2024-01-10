@@ -1,5 +1,7 @@
 package com.example.crm04.config;
 
+import com.example.crm04.filter.AuthenticationFilter;
+import com.example.crm04.filter.CheckroleFilter;
 import com.example.crm04.filter.CustomFilter;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
@@ -11,10 +13,28 @@ public class CustomFilterConfig {
     public FilterRegistrationBean<CustomFilter> filterConfig(){
         FilterRegistrationBean<CustomFilter> registrationBean = new FilterRegistrationBean<>();
         registrationBean.setFilter(new CustomFilter());
-        registrationBean.addUrlPatterns("/role","/login"); //Khi ngươời dùng gọi link là /role mới kích hoạt filter
+        registrationBean.addUrlPatterns("/login"); //Khi người dùng gọi link là /role mới kích hoạt filter
+        registrationBean.setOrder(1);
         return registrationBean;
     }
 
+    @Bean
+    public FilterRegistrationBean<AuthenticationFilter> authenFilterconfig(){
+        FilterRegistrationBean<AuthenticationFilter> registrationBean = new FilterRegistrationBean<>();
+        registrationBean.setFilter(new AuthenticationFilter());
+        registrationBean.addUrlPatterns("/role"); //Khi người dùng gọi link là /role mới kích hoạt filter
+        registrationBean.setOrder(2);
+        return registrationBean;
+    }
+
+    @Bean
+    public FilterRegistrationBean<CheckroleFilter> roleFilterconfig(){
+        FilterRegistrationBean<CheckroleFilter> registrationBean = new FilterRegistrationBean<>();
+        registrationBean.setFilter(new CheckroleFilter());
+        registrationBean.addUrlPatterns("/role"); //Khi người dùng gọi link là /role mới kích hoạt filter
+        registrationBean.setOrder(3);
+        return registrationBean;
+    }
     /**
      * 1) Nếu như đã đăng nhập rồi thì không cần đăng nhập lại
      * Bước 1: Khi đăng nhập thành công thì phải lưu lại thông tin user đã đăng nhập(Session/Cookie)

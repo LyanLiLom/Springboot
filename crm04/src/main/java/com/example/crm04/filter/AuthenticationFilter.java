@@ -4,34 +4,23 @@ import jakarta.servlet.*;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
-import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 
-
-public class CustomFilter implements Filter {
-
+public class AuthenticationFilter implements Filter {
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
-        System.out.println("Kiem tra filter");
+        System.out.println("Kiem tra authenFilter");
         HttpServletRequest request = (HttpServletRequest) servletRequest;
         HttpServletResponse response = (HttpServletResponse) servletResponse;
         HttpSession session = request.getSession();
-
-        //Lấy đường dẫn người dùng đang gọi mà kích hoạt filter
-        String part = request.getServletPath();
-
-
-        //Kiểm tra xem session lưu trữ ở login lúc đăng nhập thành công có tồn tại hay không
         if(session != null && session.getAttribute("email") != null && !session.getAttribute("email").equals("")){
-            //Chuyển hướng về trang chủ
-            response.sendRedirect("http://localhost:8080");
-            System.out.println("Đưa về trang chủ");
-        }else {
-            //Cho đi tiếp vào đường dẫn mà client đang gọi hoặc thoát ra khỏi filter và đi tiếp
-
             filterChain.doFilter(servletRequest, servletResponse);
-            System.out.println("Đi filter tiếp theo or kết thúc.");
+            System.out.println("Cho phép đi vào role.html");
+        }else{
+            response.sendRedirect("http://localhost:8080/login");
+            System.out.println("Đưa về trang login");
         }
+
     }
 }

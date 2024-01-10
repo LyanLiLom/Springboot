@@ -1,5 +1,6 @@
 package com.example.crm04.Controller;
 
+import com.example.crm04.Entity.RolesEntity;
 import com.example.crm04.Entity.UserEntity;
 import com.example.crm04.Repository.UserRepository;
 import jakarta.servlet.http.Cookie;
@@ -90,26 +91,35 @@ public class LoginController {
                              HttpServletResponse response, HttpSession httpSession) {
 
         boolean flag = false;
+        String roleId = "";
         List<UserEntity> list = userRepository.findByEmailAndPassword(email, password);
+        for (UserEntity check: list){
+            String role = check.getRolesEntity().getDescription();
+            System.out.println("Kiem tra " + role);
+            roleId = role;
+        }
+
         System.out.println("Username: " + email);
         System.out.println("Password: " + password);
         if (list.size() > 0) {
-            System.out.println("ddang nhap thanh cong");
+            System.out.println("dang nhap thanh cong");
             flag = true;
             System.out.println("Kiem tra: " + remember);
             try {
                 if(remember.equalsIgnoreCase("on")){
-                    Cookie emailcookie = new Cookie("email", email);
-                    Cookie passwordcookie = new Cookie("password", password);
-                    response.addCookie(emailcookie);
-                    response.addCookie(passwordcookie);
+//                    Cookie emailcookie = new Cookie("email", email);
+//                    Cookie passwordcookie = new Cookie("password", password);
+//                    response.addCookie(emailcookie);
+//                    response.addCookie(passwordcookie);
+                    httpSession.setAttribute("email",email);
+//                    httpSession.setAttribute("");
+                    httpSession.setMaxInactiveInterval(8*60*60);
+                    httpSession.setAttribute("roleId",roleId);
+                    httpSession.setMaxInactiveInterval(8*60*60);
                 }
             } catch (Exception e ) {
                 return "index";
             }
-
-            httpSession.setAttribute("email",email);
-            httpSession.setMaxInactiveInterval(8*60*60);
         }
         else {
             flag = false;
