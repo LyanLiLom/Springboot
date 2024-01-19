@@ -27,12 +27,23 @@ public class UserEntity {
     private String fullname;
     @Column(name = "avatar")
     private String avatar;
+    @Column(name = "phone")
+    private String phone;
+
 //    @Column(name = "role_id")
 //    private String roleId;
 
     @ManyToOne
     @JoinColumn(name = "role_id")//tên cột khóa ngoại trong database dùng để liên kết dữ liệu
     private RolesEntity rolesEntity; // Dựa vào chữa đằng sau OneToMany hay ManyToOne thì sẽ biết được là một đối tượng hay một list đối tượng
+
+    public String getPhone() {
+        return phone;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
+    }
 
 
     public int getId() {

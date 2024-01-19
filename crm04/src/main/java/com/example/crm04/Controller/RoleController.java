@@ -35,7 +35,7 @@ public class RoleController {
      * -Thêm mới : khóa chính của class entity truyền vào hàm save() không có giá trị
      * -Cập nhật : khóa chính của class entity truyền vào hàm save() có giá trị
      */
-    @GetMapping("")
+    @GetMapping("/add")
     public String add(){
 //        RolesEntity rolesEntity = new RolesEntity();
 //        //rolesEntity.setId(4) *cập nhật
@@ -46,9 +46,11 @@ public class RoleController {
     }
     @PostMapping("/add")
     public String processAdd(@RequestParam String roleName, @RequestParam String desc, Model model){
-        boolean flag = roleService.insertRole(roleName,desc);
+            boolean flag = roleService.insertRole(roleName, desc);
 
-        model.addAttribute("flag", flag);
+            model.addAttribute("flag", flag);
+
+
 //        try {
 //
 //        }catch (Exception e){
@@ -72,8 +74,38 @@ public class RoleController {
         return "role-table.html";
     }
     @GetMapping("/delete/{id}")
-    public String deleterole(@PathVariable Integer id){
+    public String deleterole(@PathVariable int id){
         roleRepository.deleteById(id);
         return "redirect:/role/table";
+    }
+
+    @GetMapping("/fix/{id}")
+    public String fixRole(@PathVariable int id,Model model){
+//        List<RolesEntity> roles = roleRepository.findById(id);
+//        String name = "";
+//        String description = "";
+//        for(RolesEntity role: roles) {
+//            name = role.getName();
+//            description = role.getDescription();
+//        }
+
+        RolesEntity rolesEntity =  roleService.getRoleById(id);
+//        model.addAttribute("name", rolesEntity.getName());
+//        model.addAttribute("description", rolesEntity.getDescription());
+        model.addAttribute("rolesEntity", rolesEntity);
+        return "role-fix.html";
+    }
+
+    @PostMapping("/fix/{id}")
+    public String updateRole(Model model,@PathVariable int id,
+                             @RequestParam String roleName,@RequestParam String desc){
+        RolesEntity rolesEntity = new RolesEntity();
+        rolesEntity.setId(id);
+        rolesEntity.setName(roleName);
+        rolesEntity.setDescription(desc);
+        roleService.updateRole(rolesEntity);
+
+        model.addAttribute("rolesEntity", rolesEntity);
+        return "role-fix.html";
     }
 }
