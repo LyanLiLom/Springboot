@@ -41,7 +41,7 @@ public class LoginController {
         String email = "";
         String password = "";
         Cookie[] cookies = request.getCookies();
-        if(cookies != null) {
+        if(cookies != null){
             for (Cookie cookie : cookies) {
                 if (cookie.getName().equals("email")) {
                     System.out.println("Kiem tra: " + cookie.getValue());

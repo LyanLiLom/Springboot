@@ -81,17 +81,9 @@ public class RoleController {
 
     @GetMapping("/fix/{id}")
     public String fixRole(@PathVariable int id,Model model){
-//        List<RolesEntity> roles = roleRepository.findById(id);
-//        String name = "";
-//        String description = "";
-//        for(RolesEntity role: roles) {
-//            name = role.getName();
-//            description = role.getDescription();
-//        }
 
         RolesEntity rolesEntity =  roleService.getRoleById(id);
-//        model.addAttribute("name", rolesEntity.getName());
-//        model.addAttribute("description", rolesEntity.getDescription());
+
         model.addAttribute("rolesEntity", rolesEntity);
         return "role-fix.html";
     }
@@ -105,7 +97,7 @@ public class RoleController {
         rolesEntity.setDescription(desc);
         roleService.updateRole(rolesEntity);
 
-        model.addAttribute("rolesEntity", rolesEntity);
+        model.addAttribute("rolesEntity",rolesEntity);
         return "role-fix.html";
     }
 }
